@@ -1,5 +1,9 @@
 # Reddit Pics viewer
 
+## Demo
+
+[https://github.com/mauricesvay/reddit-pics]
+
 ## Author
 
 * Maurice Svay <maurice@svay.com>, [http://svay.com](http://svay.com)

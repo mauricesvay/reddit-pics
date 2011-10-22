@@ -2,7 +2,7 @@
 
 ## Demo
 
-[https://github.com/mauricesvay/reddit-pics]
+https://github.com/mauricesvay/reddit-pics
 
 ## Author
 

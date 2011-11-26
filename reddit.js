@@ -4,10 +4,14 @@ $(document).bind('ready', function() {
 
 var Reddit = {
     $current : null,
-    feed : 'http://www.reddit.com/r/pics/new/.json?format=json',
+    subreddit : '/r/pics/',
+    feed : null,
     first : null,
     
     init: function() {
+    
+        Reddit.feed = 'http://www.reddit.com' + Reddit.subreddit + '.json?format=json';
+    
         $.ajax({
             dataType : 'jsonp',
             jsonp : 'jsonp',
@@ -53,7 +57,8 @@ var Reddit = {
             //Scroll
             var position = $(this).position();
             var scroll = $('#items').scrollTop();
-            $('#items').scrollTop(scroll + position.top);
+            var height = $('#items').height();
+            $('#items').scrollTop(scroll + position.top - height/2);
         });
         
         //Next button (could certainly be refactored)
@@ -103,7 +108,7 @@ var Reddit = {
     append : function(data, placeholder) {
         var items = data.data.children;
         var all = [];
-        var last = '';
+        var after = data.data.after;
         
         if (items.length) {
             if (placeholder) {
@@ -115,10 +120,8 @@ var Reddit = {
                     Reddit.first = items[i].data.url;
                 }
                 all.push("<li><a href='"+items[i].data.url+"' data-source='http://www.reddit.com"+items[i].data.permalink+"' data-title='"+items[i].data.title+"'><img width='70' src='"+items[i].data.thumbnail+"' alt=''> "+items[i].data.title+"</a></li>");
-                last = items[i].data.name;
             }
-            console.log("Last: " + last);
-            all.push('<li><a rel="next" href="'+Reddit.feed+'&amp;after=' + last +  '">Load more</a></li>');
+            all.push('<li><a rel="next" href="'+Reddit.feed+'&amp;after=' + after +  '">Load more</a></li>');
             $('#items').append(all.join(''));
             
             $("a[href='" + Reddit.first + "']").trigger('click');

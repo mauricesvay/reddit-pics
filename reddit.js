@@ -114,15 +114,27 @@ var Reddit = {
             if (placeholder) {
                 $(placeholder).remove();
             }
+            
+            var fragment = document.createDocumentFragment();
         
             for (var i=0,l=items.length; i<l; i++) {
                 if (i == 0) {
                     Reddit.first = items[i].data.url;
                 }
-                all.push("<li><a href='"+items[i].data.url+"' data-source='http://www.reddit.com"+items[i].data.permalink+"' data-title='"+items[i].data.title+"'><img width='70' src='"+items[i].data.thumbnail+"' alt=''> "+items[i].data.title+"</a></li>");
+                
+                var a = $('<a/>');
+                a.attr("href", items[i].data.url);
+                a.data("source", "http://www.reddit.com" + items[i].data.permalink);
+                a.data("title", items[i].data.title);
+                a.html('<img width="70" src="' + items[i].data.thumbnail + '" alt=""> ' + items[i].data.title);
+                
+                var li = $('<li/>');
+                li.append(a);
+                
+                fragment.appendChild(li[0]);
             }
-            all.push('<li><a rel="next" href="'+Reddit.feed+'&amp;after=' + after +  '">Load more</a></li>');
-            $('#items').append(all.join(''));
+            $("#items").append(fragment);
+            $("#items").append('<li><a rel="next" href="'+Reddit.feed+'&amp;after=' + after +  '">Load more</a></li>');
             
             $("a[href='" + Reddit.first + "']").trigger('click');
         } else {

@@ -44,8 +44,8 @@ var Reddit = {
                 $('#details').html('<img src="' + url + '">');
             } else {
                 //Try to be clever by resolving imgur images
-                var matches = url.match('http:\/\/imgur.com\/(.*)') || [];
-                if (matches.length) {
+                var matches = url.match(/http:\/\/imgur.com\/(.*)/) || [];
+                if (matches.length && (-1 === matches[1].indexOf('/'))) {
                     url = 'http://i.imgur.com/' + matches[1] + '.jpg';
                     $('#details').html('<img src="' + url + '">');
                 } else {
@@ -58,7 +58,10 @@ var Reddit = {
             var position = $(this).position();
             var scroll = $('#items').scrollTop();
             var height = $('#items').height();
-            $('#items').scrollTop(scroll + position.top - height/2);
+            //$('#items').scrollTop(scroll + position.top - height/2);
+            $('#items').animate({
+                scrollTop: scroll + position.top - height/2
+            })
         });
         
         //Next button (could certainly be refactored)

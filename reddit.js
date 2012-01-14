@@ -4,13 +4,13 @@ $(document).bind('ready', function() {
 
 var Reddit = {
     $current : null,
-    subreddit : '/r/pics/',
+    subreddit : '/r/pics/new/',
     feed : null,
     first : null,
     
     init: function() {
     
-        Reddit.feed = 'http://www.reddit.com' + Reddit.subreddit + '.json?format=json';
+        Reddit.feed = 'http://www.reddit.com' + Reddit.subreddit + '.json?format=json&sort=new';
     
         $.ajax({
             dataType : 'jsonp',

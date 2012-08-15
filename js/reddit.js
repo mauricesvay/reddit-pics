@@ -1,4 +1,23 @@
 $(document).bind('ready', function() {
+
+    //Resolvers that guess the image URL
+    ImageResolver.register(new FileExtensionResolver());
+    ImageResolver.register(new ImgurPageResolver());
+    ImageResolver.register(new NineGagResolver());
+    ImageResolver.register(new InstagramResolver());
+
+    //Resolvers that need extra ajax requests
+    ImageResolver.register(new ImgurAlbumResolver());
+    ImageResolver.register(new FlickrResolver('a761e413a1b632086eb33a8a6aab3f98')); //Please don't use my api key!
+    ImageResolver.register(new OpengraphResolver());
+    ImageResolver.register(new WebpageResolver());
+
+    //Some jQuery code to make the demo work
+    //Use a crossdomain proxy (required by some plugins)
+    $.ajaxPrefilter('text', function(options) {
+        options.url = "http://furious-stream-4406.herokuapp.com?src=" + encodeURIComponent(options.url);
+    });
+
     Reddit.init();
 });
 
@@ -97,32 +116,13 @@ var Reddit = {
     },
 
     display : function display(url) {
-        if (url.match(/(png|jpg|jpeg|gif)$/i)) {
-            $('#details').html('<img src="' + url + '">');
-        } else {
-
-            if (url.match(/http:\/\/instagram.com\/p\/[^\/]+/)) {
-                url = url + '/media/?size=l';
-                $('#details').html('<img src="' + url + '">');
-            }
-
-            //Try to be clever by resolving imgur images
-            var matches = url.match(/http:\/\/imgur.com\/(.*)/) || [];
-            if (matches.length && (-1 === matches[1].indexOf('/'))) {
-                url = 'http://i.imgur.com/' + matches[1] + '.jpg';
+        ImageResolver.resolve(url, function imageResolved(image){
+            if (image) {
+                $('#details').html('<img src="' + image + '">');
             } else {
-                url = {
-                    url: url
-                };
+                $('#details').html('<a target="_blank" href="' + url.url + '">Link</a>');
             }
-        }
-
-        if (typeof url === 'string') {
-            $('#details').html('<img src="' + url + '">');
-        } else {
-            $('#details').html('<a target="_blank" href="' + url.url + '">Link</a>');
-            // $('#details').html('<iframe src="' + url.url + '"></iframe>');
-        }
+        });
     },
 
     loadMore : function(elem) {

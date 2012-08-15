@@ -40,18 +40,6 @@ var Reddit = {
             $target.addClass('selected');
             Reddit.$current = $target;
 
-            if (url.match(/(png|jpg|jpeg|gif)$/i)) {
-                $('#details').html('<img src="' + url + '">');
-            } else {
-                //Try to be clever by resolving imgur images
-                var matches = url.match(/http:\/\/imgur.com\/(.*)/) || [];
-                if (matches.length && (-1 === matches[1].indexOf('/'))) {
-                    url = 'http://i.imgur.com/' + matches[1] + '.jpg';
-                    $('#details').html('<img src="' + url + '">');
-                } else {
-                    $('#details').html('<iframe src="' + url + '"></iframe>');
-                }
-            }
             $('#status').html('<a href="'+$(this).data('source')+'">'+$(this).data('title')+'</a>');
 
             //Scroll
@@ -62,6 +50,8 @@ var Reddit = {
             $('#items').animate({
                 scrollTop: scroll + position.top - height/2
             });
+
+            Reddit.display(url);
         });
 
         //Next button (could certainly be refactored)
@@ -88,12 +78,51 @@ var Reddit = {
             }
         });
 
-        $(document).bind('keydown', 'up', function() {
+        $(document).bind('keydown', 'up', function(e) {
             $('#prev').trigger('click');
         });
-        $(document).bind('keydown', 'down', function() {
+        $(document).bind('keydown', 'down', function(e) {
             $('#next').trigger('click');
         });
+
+        $('#details')
+            .hammer({})
+            .on('swipe', function(e) {
+                if (e.direction === 'right') {
+                    $('#prev').trigger('click');
+                } else if (e.direction === 'left') {
+                    $('#next').trigger('click');
+                }
+            });
+    },
+
+    display : function display(url) {
+        if (url.match(/(png|jpg|jpeg|gif)$/i)) {
+            $('#details').html('<img src="' + url + '">');
+        } else {
+
+            if (url.match(/http:\/\/instagram.com\/p\/[^\/]+/)) {
+                url = url + '/media/?size=l';
+                $('#details').html('<img src="' + url + '">');
+            }
+
+            //Try to be clever by resolving imgur images
+            var matches = url.match(/http:\/\/imgur.com\/(.*)/) || [];
+            if (matches.length && (-1 === matches[1].indexOf('/'))) {
+                url = 'http://i.imgur.com/' + matches[1] + '.jpg';
+            } else {
+                url = {
+                    url: url
+                };
+            }
+        }
+
+        if (typeof url === 'string') {
+            $('#details').html('<img src="' + url + '">');
+        } else {
+            $('#details').html('<a target="_blank" href="' + url.url + '">Link</a>');
+            // $('#details').html('<iframe src="' + url.url + '"></iframe>');
+        }
     },
 
     loadMore : function(elem) {
@@ -128,7 +157,6 @@ var Reddit = {
                 if (i === 0) {
                     Reddit.first = items[i].data.url;
                 }
-
                 var a = $('<a/>');
                 a.attr("href", items[i].data.url);
                 a.data("source", "http://www.reddit.com" + items[i].data.permalink);

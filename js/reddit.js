@@ -41,8 +41,9 @@ var Reddit = {
         });
 
         //Handle item selection
-        $('#items').delegate('a','click', function(e) {
+        $('.items').delegate('a','click', function(e) {
             e.preventDefault();
+            Reddit.startLoading();
 
             var $target = $(e.currentTarget);
             var url = $target.attr('href');
@@ -59,18 +60,16 @@ var Reddit = {
             $target.addClass('selected');
             Reddit.$current = $target;
 
-            $('#status').html('<a href="'+$(this).data('source')+'">'+$(this).data('title')+'</a>');
-
             //Scroll
             var position = $(this).position();
-            var scroll = $('#items').scrollTop();
-            var height = $('#items').height();
-            //$('#items').scrollTop(scroll + position.top - height/2);
-            $('#items').animate({
+            var scroll = $('.items').scrollTop();
+            var height = $('.items').height();
+            //$('.items').scrollTop(scroll + position.top - height/2);
+            $('.items').animate({
                 scrollTop: scroll + position.top - height/2
             });
 
-            Reddit.display(url);
+            Reddit.display(url, $(this).data('title'), $(this).data('source'));
         });
 
         //Next button (could certainly be refactored)
@@ -104,7 +103,7 @@ var Reddit = {
             $('#next').trigger('click');
         });
 
-        $('#details')
+        $('.details')
             .hammer({})
             .on('swipe', function(e) {
                 if (e.direction === 'right') {
@@ -115,18 +114,30 @@ var Reddit = {
             });
     },
 
-    display : function display(url) {
+    startLoading : function startLoading() {
+        $(".status").html("<strong>Loading...</strong>");
+        $('.details').html('');
+    },
+
+    endLoading : function endLoading() {
+        $(".status").html("");
+        return;
+    },
+
+    display : function display(url, title, source) {
         ImageResolver.resolve(url, function imageResolved(image){
+            Reddit.endLoading();
             if (image) {
-                $('#details').html('<img src="' + image + '">');
+                $('.details').html('<img src="' + image + '">');
             } else {
-                $('#details').html('<a target="_blank" href="' + url.url + '">Link</a>');
+                $('.details').html('<a target="_blank" href="' + url + '">Link</a>');
             }
+            $('.status').html('<a href="' + source + '">' + title + '</a>');
         });
     },
 
     loadMore : function(elem) {
-        $("#status").html("<strong>Loading...</strong>");
+        $(".status").html("<strong>Loading...</strong>");
 
         var placeholder = elem.parent('li');
         var url = elem.attr('href');
@@ -168,8 +179,8 @@ var Reddit = {
 
                 fragment.appendChild(li[0]);
             }
-            $("#items").append(fragment);
-            $("#items").append('<li><a rel="next" href="'+Reddit.feed+'&amp;after=' + after +  '">Load more</a></li>');
+            $(".items").append(fragment);
+            $(".items").append('<li><a rel="next" href="'+Reddit.feed+'&amp;after=' + after +  '">Load more</a></li>');
 
             $("a[href='" + Reddit.first + "']").trigger('click');
         } else {

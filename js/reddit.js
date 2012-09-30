@@ -8,7 +8,7 @@ $(document).bind('ready', function() {
 
     //Resolvers that need extra ajax requests
     ImageResolver.register(new ImgurAlbumResolver());
-    ImageResolver.register(new FlickrResolver('a761e413a1b632086eb33a8a6aab3f98')); //Please don't use my api key!
+    ImageResolver.register(new FlickrResolver('6a4f9b6d16c0eaced089c91a2e7e87ad')); //Please don't use my api key!
     ImageResolver.register(new OpengraphResolver());
     ImageResolver.register(new WebpageResolver());
 

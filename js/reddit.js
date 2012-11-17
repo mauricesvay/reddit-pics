@@ -70,6 +70,12 @@ var Reddit = {
             });
 
             Reddit.display(url, $(this).data('title'), $(this).data('source'));
+
+            //Preload next
+            var $next = Reddit.$current.parent().next().children('a');
+            if ('next' !== $next.attr('rel')) {
+                Reddit.preload($next.attr('href'));
+            }
         });
 
         //Next button (could certainly be refactored)
@@ -122,6 +128,14 @@ var Reddit = {
     endLoading : function endLoading() {
         $(".status").html("");
         return;
+    },
+
+    preload : function preload(url) {
+        ImageResolver.resolve(url, function imageResolved(image){
+            console.log('Preload ' + image);
+            var img = document.createElement('img');
+            img.src = image;
+        });
     },
 
     display : function display(url, title, source) {

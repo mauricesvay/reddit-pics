@@ -132,7 +132,7 @@ var Reddit = {
 
     preload : function preload(url) {
         ImageResolver.resolve(url, function imageResolved(image){
-            console.log('Preload ' + image);
+            // console.log('Preload ' + image);
             var img = document.createElement('img');
             img.src = image;
         });

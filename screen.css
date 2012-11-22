@@ -48,6 +48,7 @@ html, body {
 .items {
     width: 20%;
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
     margin: 0;
     padding: 0;
 }

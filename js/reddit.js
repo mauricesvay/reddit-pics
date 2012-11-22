@@ -79,7 +79,9 @@ var Reddit = {
         });
 
         //Next button (could certainly be refactored)
-        $('#next').bind('click', function() {
+        $('#next')
+            .hammer({})
+            .on('tap', function() {
             if (Reddit.$current) {
                 var $next = Reddit.$current.parent('li').next().find('a');
                 if ($next.length) {
@@ -91,7 +93,9 @@ var Reddit = {
         });
 
         //Previous button (could certainly be refactored)
-        $('#prev').bind('click', function() {
+        $('#prev')
+            .hammer({})
+            .on('tap', function() {
             if (Reddit.$current) {
                 var $prev = Reddit.$current.parent('li').prev().find('a');
                 if ($prev.length) {

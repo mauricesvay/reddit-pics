@@ -64,10 +64,10 @@ var Reddit = {
             var position = $(this).position();
             var scroll = $('.items').scrollTop();
             var height = $('.items').height();
-            //$('.items').scrollTop(scroll + position.top - height/2);
-            $('.items').animate({
-                scrollTop: scroll + position.top - height/2
-            });
+            $('.items').scrollTop(scroll + position.top - height/2);
+            // $('.items').animate({
+            //     scrollTop: scroll + position.top - height/2
+            // });
 
             Reddit.display(url, $(this).data('title'), $(this).data('source'));
 
@@ -82,46 +82,55 @@ var Reddit = {
         $('#next')
             .hammer({})
             .on('tap', function() {
-            if (Reddit.$current) {
-                var $next = Reddit.$current.parent('li').next().find('a');
-                if ($next.length) {
-                    Reddit.$current.removeClass('selected');
-                    Reddit.$current = $next;
-                    Reddit.$current.trigger('click');
-                }
-            }
-        });
+                Reddit.goToNext();
+            });
 
         //Previous button (could certainly be refactored)
         $('#prev')
             .hammer({})
             .on('tap', function() {
-            if (Reddit.$current) {
-                var $prev = Reddit.$current.parent('li').prev().find('a');
-                if ($prev.length) {
-                    Reddit.$current.removeClass('selected');
-                    Reddit.$current = $prev;
-                    Reddit.$current.trigger('click');
-                }
-            }
-        });
+                Reddit.goToPrev();
+            });
 
         $(document).bind('keydown', 'up', function(e) {
-            $('#prev').trigger('click');
+            Reddit.goToPrev();
         });
         $(document).bind('keydown', 'down', function(e) {
-            $('#next').trigger('click');
+            Reddit.goToNext();
         });
 
         $('.details')
             .hammer({})
             .on('swipe', function(e) {
+                console.log('Swipe');
                 if (e.direction === 'right') {
-                    $('#prev').trigger('click');
+                    Reddit.goToPrev();
                 } else if (e.direction === 'left') {
-                    $('#next').trigger('click');
+                    Reddit.goToNext();
                 }
             });
+    },
+
+    goToNext : function() {
+        if (Reddit.$current) {
+            var $next = Reddit.$current.parent('li').next().find('a');
+            if ($next.length) {
+                Reddit.$current.removeClass('selected');
+                Reddit.$current = $next;
+                Reddit.$current.trigger('click');
+            }
+        }
+    },
+
+    goToPrev : function() {
+        if (Reddit.$current) {
+            var $prev = Reddit.$current.parent('li').prev().find('a');
+            if ($prev.length) {
+                Reddit.$current.removeClass('selected');
+                Reddit.$current = $prev;
+                Reddit.$current.trigger('click');
+            }
+        }
     },
 
     startLoading : function startLoading() {

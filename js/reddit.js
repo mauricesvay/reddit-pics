@@ -62,9 +62,9 @@ var Reddit = {
 
             //Scroll
             var position = $(this).position();
-            var scroll = $('.items').scrollTop();
-            var height = $('.items').height();
-            $('.items').scrollTop(scroll + position.top - height/2);
+            var scroll = $('.items').scrollLeft();
+            var width = $('.items').width();
+            $('.items').scrollLeft(scroll + position.left - width/2);
             // $('.items').animate({
             //     scrollTop: scroll + position.top - height/2
             // });
@@ -78,36 +78,36 @@ var Reddit = {
             }
         });
 
-        //Next button (could certainly be refactored)
-        $('#next')
-            .hammer({})
-            .on('tap', function() {
-                Reddit.goToNext();
-            });
+        // $('#next')
+        //     .hammer({})
+        //     .on('tap', function() {
+        //         Reddit.goToNext();
+        //     });
 
-        //Previous button (could certainly be refactored)
-        $('#prev')
-            .hammer({})
-            .on('tap', function() {
-                Reddit.goToPrev();
-            });
+        // $('#prev')
+        //     .hammer({})
+        //     .on('tap', function() {
+        //         Reddit.goToPrev();
+        //     });
 
-        $(document).bind('keydown', 'up', function(e) {
+        $(document).bind('keydown', 'left', function(e) {
             Reddit.goToPrev();
         });
-        $(document).bind('keydown', 'down', function(e) {
+        $(document).bind('keydown', 'right', function(e) {
             Reddit.goToNext();
         });
 
         $('.details')
             .hammer({})
             .on('swipe', function(e) {
-                console.log('Swipe');
                 if (e.direction === 'right') {
                     Reddit.goToPrev();
                 } else if (e.direction === 'left') {
                     Reddit.goToNext();
                 }
+            })
+            .on('tap', function(e){
+                Reddit.goToNext();
             });
     },
 
@@ -154,6 +154,11 @@ var Reddit = {
     display : function display(url, title, source) {
         ImageResolver.resolve(url, function imageResolved(image){
             Reddit.endLoading();
+            if (Reddit.$current.attr('href') !== url) {
+                // async result doesn't match current selected item
+                // result arriving too late ?
+                return;
+            }
             if (image) {
                 $('.details').html('<img src="' + image + '">');
             } else {
@@ -199,7 +204,7 @@ var Reddit = {
                 a.attr("href", items[i].data.url);
                 a.data("source", "http://www.reddit.com" + items[i].data.permalink);
                 a.data("title", items[i].data.title);
-                a.html('<img width="70" src="' + items[i].data.thumbnail + '" alt=""> ' + items[i].data.title);
+                a.html('<img width="70" src="' + items[i].data.thumbnail + '" alt="">');
 
                 var li = $('<li/>');
                 li.append(a);

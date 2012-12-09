@@ -11,6 +11,11 @@ $(document).bind('ready', function() {
     ImageResolver.register(new FlickrResolver('6a4f9b6d16c0eaced089c91a2e7e87ad')); //Please don't use my api key!
     ImageResolver.register(new OpengraphResolver());
     ImageResolver.register(new WebpageResolver());
+    ImageResolver.register({
+        resolve: function(url, clbk) {
+            clbk('http://screenshot.etf1.fr/?url=' + encodeURIComponent(url));
+        }
+    });
 
     //Some jQuery code to make the demo work
     //Use a crossdomain proxy (required by some plugins)
@@ -28,6 +33,13 @@ var Reddit = {
     first : null,
 
     init: function() {
+        Reddit.bindEvents();
+        Reddit.start();
+    },
+
+    start: function() {
+        $('.items').empty();
+        $('.details').empty();
 
         Reddit.feed = 'http://www.reddit.com' + Reddit.subreddit + '.json?format=json&sort=new';
 
@@ -39,7 +51,9 @@ var Reddit = {
                 Reddit.append(data);
             }
         });
+    },
 
+    bindEvents: function() {
         //Handle item selection
         $('.items').delegate('a','click', function(e) {
             e.preventDefault();
@@ -65,9 +79,6 @@ var Reddit = {
             var scroll = $('.items').scrollLeft();
             var width = $('.items').width();
             $('.items').scrollLeft(scroll + position.left - width/2);
-            // $('.items').animate({
-            //     scrollTop: scroll + position.top - height/2
-            // });
 
             Reddit.display(url, $(this).data('title'), $(this).data('source'));
 
@@ -77,18 +88,6 @@ var Reddit = {
                 Reddit.preload($next.attr('href'));
             }
         });
-
-        // $('#next')
-        //     .hammer({})
-        //     .on('tap', function() {
-        //         Reddit.goToNext();
-        //     });
-
-        // $('#prev')
-        //     .hammer({})
-        //     .on('tap', function() {
-        //         Reddit.goToPrev();
-        //     });
 
         $(document).bind('keydown', 'left', function(e) {
             Reddit.goToPrev();
@@ -109,6 +108,11 @@ var Reddit = {
             .on('tap', function(e){
                 Reddit.goToNext();
             });
+
+        $('.subreddit-selector').on('change', function(){
+            Reddit.subreddit = $(this).val();
+            Reddit.start();
+        });
     },
 
     goToNext : function() {
@@ -200,10 +204,16 @@ var Reddit = {
                 if (i === 0) {
                     Reddit.first = items[i].data.url;
                 }
+                console.log(items[i]);
                 var a = $('<a/>');
                 a.attr("href", items[i].data.url);
                 a.data("source", "http://www.reddit.com" + items[i].data.permalink);
                 a.data("title", items[i].data.title);
+
+                if (!items[i].data.thumbnail.match('http://')) {
+                    items[i].data.thumbnail = 'default.png';
+                }
+
                 a.html('<img width="70" src="' + items[i].data.thumbnail + '" alt="">');
 
                 var li = $('<li/>');

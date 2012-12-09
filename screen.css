@@ -13,6 +13,11 @@ html, body {
     width: 100%;
 }
 
+header {
+    height: 30px;
+    line-height: 30px;
+}
+
 .items {
     height: 75px;
     overflow: auto;
@@ -80,7 +85,7 @@ html, body {
     overflow: auto;
     background: #000;
     text-align: center;
-    padding-top: 100px;
+    padding-top: 130px;
 
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;

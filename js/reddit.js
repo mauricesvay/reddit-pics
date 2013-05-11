@@ -49,6 +49,9 @@ var Reddit = {
             url : Reddit.feed,
             success : function(data, status, xhr) {
                 Reddit.append(data);
+            },
+            error : function() {
+                alert("Couldn't load feed");
             }
         });
     },
@@ -111,6 +114,9 @@ var Reddit = {
 
         $('.subreddit-selector').on('change', function(){
             Reddit.subreddit = $(this).val();
+            if (Reddit.subreddit === 'other') {
+                Reddit.subreddit = window.prompt("Enter a subreddit", "/r/pics");
+            }
             Reddit.start();
         });
     },

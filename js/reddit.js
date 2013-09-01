@@ -119,6 +119,18 @@ var Reddit = {
             }
             Reddit.start();
         });
+
+        $('.status').on('click', 'a', function(e){
+            e.preventDefault();
+            $('div.browser').show();
+            $('div.browser .link').html('<a href="' + this.href + '">' + this.href + '</a>');
+            $('iframe.browser').attr('src', this.href);
+            $('iframe.browser').height($('div.browser').height() - 50);
+        });
+        $('div.browser button').on('click', function() {
+            $('div.browser').hide();
+        });
+        $('div.browser').hide();
     },
 
     goToNext : function() {
@@ -210,7 +222,6 @@ var Reddit = {
                 if (i === 0) {
                     Reddit.first = items[i].data.url;
                 }
-                console.log(items[i]);
                 var a = $('<a/>');
                 a.attr("href", items[i].data.url);
                 a.data("source", "http://www.reddit.com" + items[i].data.permalink);

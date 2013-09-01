@@ -98,3 +98,25 @@ header {
         max-width: 100%;
         max-height: 100%;
     }
+
+div.browser {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 20px;
+    background: #666;
+}
+    div.browser a {
+        color: #FFF;
+    }
+    div.browser button {
+        font-size: 1.5em;
+        font-weight: bold;
+        float: right;
+    }
+    iframe.browser {
+        display: block;
+        width: 100%;
+    }

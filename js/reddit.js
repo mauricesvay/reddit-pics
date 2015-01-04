@@ -1,28 +1,4 @@
 $(document).bind('ready', function() {
-
-    //Resolvers that guess the image URL
-    ImageResolver.register(new FileExtensionResolver());
-    ImageResolver.register(new ImgurPageResolver());
-    ImageResolver.register(new NineGagResolver());
-    ImageResolver.register(new InstagramResolver());
-
-    //Resolvers that need extra ajax requests
-    ImageResolver.register(new ImgurAlbumResolver());
-    ImageResolver.register(new FlickrResolver('6a4f9b6d16c0eaced089c91a2e7e87ad')); //Please don't use my api key!
-    ImageResolver.register(new OpengraphResolver());
-    ImageResolver.register(new WebpageResolver());
-    ImageResolver.register({
-        resolve: function(url, clbk) {
-            clbk('http://screenshot.etf1.fr/?url=' + encodeURIComponent(url));
-        }
-    });
-
-    //Some jQuery code to make the demo work
-    //Use a crossdomain proxy (required by some plugins)
-    $.ajaxPrefilter('text', function(options) {
-        options.url = "http://furious-stream-4406.herokuapp.com?src=" + encodeURIComponent(options.url);
-    });
-
     Reddit.init();
 });
 
@@ -33,6 +9,27 @@ var Reddit = {
     first : null,
 
     init: function() {
+
+        function proxify( request ) {
+            request.url = "http://www.inertie.org/ba-simple-proxy.php?mode=native&url=" + encodeURIComponent( request.url );
+            return request;
+        }
+
+        Reddit.resolver = new ImageResolver({ requestPlugin : proxify });
+        Reddit.resolver.register(new ImageResolver.FileExtension());
+        Reddit.resolver.register(new ImageResolver.ImgurPage());
+        Reddit.resolver.register(new ImageResolver.NineGag());
+        Reddit.resolver.register(new ImageResolver.Instagram());
+        Reddit.resolver.register(new ImageResolver.MimeType());
+        Reddit.resolver.register(new ImageResolver.Flickr('6a4f9b6d16c0eaced089c91a2e7e87ad'));
+        Reddit.resolver.register(new ImageResolver.Opengraph());
+        Reddit.resolver.register(new ImageResolver.Webpage());
+        Reddit.resolver.register({
+            resolve: function(url, clbk, options, utils) {
+                clbk('http://screenshot.etf1.fr/?url=' + encodeURIComponent(url));
+            }
+        });
+
         Reddit.bindEvents();
         Reddit.start();
     },
@@ -166,15 +163,16 @@ var Reddit = {
     },
 
     preload : function preload(url) {
-        ImageResolver.resolve(url, function imageResolved(image){
-            // console.log('Preload ' + image);
-            var img = document.createElement('img');
-            img.src = image;
+        Reddit.resolver.resolve(url, function imageResolved(image){
+            if (image) {
+                var img = document.createElement('img');
+                img.src = image.image;
+            }
         });
     },
 
     display : function display(url, title, source) {
-        ImageResolver.resolve(url, function imageResolved(image){
+        Reddit.resolver.resolve(url, function imageResolved(image){
             Reddit.endLoading();
             if (Reddit.$current.attr('href') !== url) {
                 // async result doesn't match current selected item
@@ -182,7 +180,7 @@ var Reddit = {
                 return;
             }
             if (image) {
-                $('.details').html('<img src="' + image + '">');
+                $('.details').html('<img src="' + image.image + '">');
             } else {
                 $('.details').html('<a target="_blank" href="' + url + '">Link</a>');
             }
